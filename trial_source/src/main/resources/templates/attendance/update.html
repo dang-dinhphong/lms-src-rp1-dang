@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" 
-	th:replace="~{/common/layout :: layout(~{::title},~{::body/content()})}">
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{/common/layout :: layout(~{::title},~{::body/content()})}">
+
 <head>
-<meta charset="UTF-8">
-<title>勤怠情報変更｜LMS</title>
+	<meta charset="UTF-8">
+	<title>勤怠情報変更｜LMS</title>
 </head>
+
 <body>
 
 	<th:block th:if="${session.loginUserDto.role == '0001'}">
@@ -38,32 +39,41 @@
 						<th:block th:each="dailyAttendanceForm, stat : *{attendanceForm.attendanceList}">
 							<tr>
 								<th:block>
-									<input type="hidden" th:name="|attendanceList[${stat.index}].isToday|" th:value="${dailyAttendanceForm.isToday}" />
-									<input type="hidden" th:name="|attendanceList[${stat.index}].studentAttendanceId|" th:value="${dailyAttendanceForm.studentAttendanceId}" />
-									<input type="hidden" th:name="|attendanceList[${stat.index}].trainingDate|" th:value="${dailyAttendanceForm.trainingDate}" />
-									<input type="hidden" th:name="|attendanceList[${stat.index}].dispTrainingDate|" th:value="${dailyAttendanceForm.dispTrainingDate}" />
-									<input type="hidden" th:name="|attendanceList[${stat.index}].sectionName|" th:value="${dailyAttendanceForm.sectionName}" />
-									<input type="hidden" th:name="|attendanceList[${stat.index}].statusDispName|" th:value="${dailyAttendanceForm.statusDispName}" />
+									<input type="hidden" th:name="|attendanceList[${stat.index}].isToday|"
+										th:value="${dailyAttendanceForm.isToday}" />
+									<input type="hidden" th:name="|attendanceList[${stat.index}].studentAttendanceId|"
+										th:value="${dailyAttendanceForm.studentAttendanceId}" />
+									<input type="hidden" th:name="|attendanceList[${stat.index}].trainingDate|"
+										th:value="${dailyAttendanceForm.trainingDate}" />
+									<input type="hidden" th:name="|attendanceList[${stat.index}].dispTrainingDate|"
+										th:value="${dailyAttendanceForm.dispTrainingDate}" />
+									<input type="hidden" th:name="|attendanceList[${stat.index}].sectionName|"
+										th:value="${dailyAttendanceForm.sectionName}" />
+									<input type="hidden" th:name="|attendanceList[${stat.index}].statusDispName|"
+										th:value="${dailyAttendanceForm.statusDispName}" />
 								</th:block>
 								<td class="w140">[[${dailyAttendanceForm.dispTrainingDate}]]</td>
 								<td class="w300">[[${dailyAttendanceForm.sectionName}]]</td>
 								<td class="w70">
 									<input type="text" th:name="|attendanceList[${stat.index}].trainingStartTime|"
-									th:value="${dailyAttendanceForm.trainingStartTime}" class="form-control" />
+										th:value="${dailyAttendanceForm.trainingStartTime}" class="form-control" />
 								</td>
 								<td class="w70">
 									<input type="text" th:name="|attendanceList[${stat.index}].trainingEndTime|"
-									th:value="${dailyAttendanceForm.trainingEndTime}" class="form-control" />
+										th:value="${dailyAttendanceForm.trainingEndTime}" class="form-control" />
 								</td>
 								<td class="w80">
 									<select th:name="|attendanceList[${stat.index}].blankTime|" class="form-control">
-										<option th:each="blankTime : ${attendanceForm.blankTimes}" th:value="${blankTime.key}" th:inlne="text" class="form-control" 
-											th:selected="${blankTime.key == dailyAttendanceForm.blankTime}">[[${blankTime.value}]]</option>
+										<option th:each="blankTime : ${attendanceForm.blankTimes}"
+											th:value="${blankTime.key}" th:inlne="text" class="form-control"
+											th:selected="${blankTime.key == dailyAttendanceForm.blankTime}">
+											[[${blankTime.value}]]</option>
 									</select>
 								</td>
 								<td class="w70">[[${dailyAttendanceForm.statusDispName}]]</td>
 								<td class="w240">
-									<input type="text" th:name="|attendanceList[${stat.index}].note|" th:value="${dailyAttendanceForm.note}" class="form-control"></input>
+									<input type="text" th:name="|attendanceList[${stat.index}].note|"
+										th:value="${dailyAttendanceForm.note}" class="form-control"></input>
 								</td>
 							</tr>
 						</th:block>
@@ -83,6 +93,6 @@
 			</form>
 		</div>
 	</div>
-
 </body>
+
 </html>

@@ -1,6 +1,7 @@
 package jp.co.sss.lms.service;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -332,6 +333,27 @@ public class StudentAttendanceService {
 		}
 		// 完了メッセージ
 		return messageUtil.getMessage(Constants.PROP_KEY_ATTENDANCE_UPDATE_NOTICE);
+	}
+
+	public String countEmpty(AttendanceForm attendanceForm) {
+		
+		// 現在の勤怠情報（受講生入力、未入力箇所あるレコードのみ）リストを取得
+		Integer lmsUserId = loginUserUtil.isStudent() ? loginUserDto.getLmsUserId()
+				: attendanceForm.getLmsUserId();
+		
+		//現在日付取得
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy年mm月dd日(E)");
+		Date date = new Date();
+		sdf.format(date);
+		
+		Integer notEnterCount = tStudentAttendanceMapper
+				.countEmpty(lmsUserId, Constants.DB_FLG_FALSE,date);
+		if(notEnterCount>0) {
+			//ポップアップをfalse>trueにする
+		}else {
+			//falseのままにする
+		}
+		return null;
 	}
 
 }
