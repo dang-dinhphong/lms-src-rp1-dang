@@ -73,8 +73,7 @@ public interface TStudentAttendanceMapper {
 	 * @param dateUtil
 	 * @return カウント数
 	 */
-	Integer countEmpty(@Param("lmsUserId") Integer lmsUserId,
-			@Param("deleteFlg") Short deleteFlg, @Param("today")Date today);
-	
+	Integer notEnterCount(@Param("lmsUserId") Integer lmsUserId,
+			@Param("deleteFlg") Short deleteFlg, @Param("trainingDate") Date trainingDate);
 
 }

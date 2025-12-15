@@ -75,6 +75,42 @@ public class StudentAttendanceService {
 	}
 
 	/**
+	 * 過去未入力箇所を判定する
+	 * 
+	 * @param lmsUserId 受験生番号
+	 * @return countEmpty > 0、boolean型となる
+	 * @throws ParseException 日付のフォーマット・変換に必要
+	 */
+	public boolean emptiedAttendanceCheck(Integer lmsUserId) throws ParseException {
+
+		/*入力抜けをカウント
+		 *現在日付取得
+		 */
+		Date date = new Date();
+		
+		/*sdf = フォーマットの決め方
+		 * 比較する際に時分秒を無くする必要ある
+		 * 時分秒省略することで本日未入力によるアラートを防げる
+		*/
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+		
+		//現在日付をsdfでフォーマット(Date>String)
+		String today = sdf.format(date);
+		//parseメソッドでString>Dateにキャスト
+		Date trainingDate = sdf.parse(today);
+		
+		/*過去未入力箇所をカウントする処理*/
+		Integer countEmpty = tStudentAttendanceMapper
+				.notEnterCount(lmsUserId, Constants.DB_FLG_FALSE, trainingDate);
+		
+		/*return文で簡単にbooleanとして返せる
+		 * countEmpty > 0 == trueと暗黙的に
+		 * */
+		return countEmpty > 0;
+
+	}
+
+	/**
 	 * 出退勤更新前のチェック
 	 * 
 	 * @param attendanceType
@@ -333,27 +369,6 @@ public class StudentAttendanceService {
 		}
 		// 完了メッセージ
 		return messageUtil.getMessage(Constants.PROP_KEY_ATTENDANCE_UPDATE_NOTICE);
-	}
-
-	public String countEmpty(AttendanceForm attendanceForm) {
-		
-		// 現在の勤怠情報（受講生入力、未入力箇所あるレコードのみ）リストを取得
-		Integer lmsUserId = loginUserUtil.isStudent() ? loginUserDto.getLmsUserId()
-				: attendanceForm.getLmsUserId();
-		
-		//現在日付取得
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy年mm月dd日(E)");
-		Date date = new Date();
-		sdf.format(date);
-		
-		Integer notEnterCount = tStudentAttendanceMapper
-				.countEmpty(lmsUserId, Constants.DB_FLG_FALSE,date);
-		if(notEnterCount>0) {
-			//ポップアップをfalse>trueにする
-		}else {
-			//falseのままにする
-		}
-		return null;
 	}
 
 }
