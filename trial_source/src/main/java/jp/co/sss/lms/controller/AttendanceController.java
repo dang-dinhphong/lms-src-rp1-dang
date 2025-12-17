@@ -46,7 +46,6 @@ public class AttendanceController {
 		List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
 				.getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId());
 		model.addAttribute("attendanceManagementDtoList", attendanceManagementDtoList);
-		
 		//過去未入力がある場合、ダイヤログ表示する
 		model.addAttribute("emptiedAttendanceCheck",studentAttendanceService.emptiedAttendanceCheck(loginUserDto.getLmsUserId()));
 
@@ -143,7 +142,16 @@ public class AttendanceController {
 		List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
 				.getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId());
 		model.addAttribute("attendanceManagementDtoList", attendanceManagementDtoList);
-
+		
+		
+		/*
+		 * ①．出勤／退勤時間をhh:mm形式に設定		
+		Ⅰ．入力パラメータ．勤怠リスト[n]の件数分、下記設定を行う										
+				入力パラメータ．勤怠リスト[n]．出勤時間	hh:mm形式で設定
+				入力パラメータ．勤怠リスト[n]．退勤時間	h:mm形式で設定
+		 */
+		
+		
 		return "attendance/detail";
 	}
 

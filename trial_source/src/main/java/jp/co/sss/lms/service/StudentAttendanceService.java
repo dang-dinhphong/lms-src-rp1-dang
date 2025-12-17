@@ -87,22 +87,22 @@ public class StudentAttendanceService {
 		 *現在日付取得
 		 */
 		Date date = new Date();
-		
+
 		/*sdf = フォーマットの決め方
 		 * 比較する際に時分秒を無くする必要ある
 		 * 時分秒省略することで本日未入力によるアラートを防げる
 		*/
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-		
+
 		//現在日付をsdfでフォーマット(Date>String)
 		String today = sdf.format(date);
 		//parseメソッドでString>Dateにキャスト
 		Date trainingDate = sdf.parse(today);
-		
+
 		/*過去未入力箇所をカウントする処理*/
 		Integer countEmpty = tStudentAttendanceMapper
 				.notEnterCount(lmsUserId, Constants.DB_FLG_FALSE, trainingDate);
-		
+
 		/*return文で簡単にbooleanとして返せる
 		 * countEmpty > 0 == trueと暗黙的に
 		 * */
@@ -252,11 +252,19 @@ public class StudentAttendanceService {
 
 		AttendanceForm attendanceForm = new AttendanceForm();
 		attendanceForm.setAttendanceList(new ArrayList<DailyAttendanceForm>());
+		
 		attendanceForm.setLmsUserId(loginUserDto.getLmsUserId());
 		attendanceForm.setUserName(loginUserDto.getUserName());
 		attendanceForm.setLeaveFlg(loginUserDto.getLeaveFlg());
+		
+		//Task26の追記！！！
+		/*
+		 * 勤怠FORM．中抜け時間（選択肢）	＝	勤怠Utilを使用して選択肢用の中抜け時間マップを取得
+		 * 勤怠FORM．時間マップ（選択肢）   ＝	勤怠Utilを使用して選択肢用の時間マップを取得 
+		 * 勤怠FORM．分マップ（選択肢）	    ＝	勤怠Utilを使用して選択肢用の分マップを取得
+		 * */
 		attendanceForm.setBlankTimes(attendanceUtil.setBlankTime());
-
+		
 		// 途中退校している場合のみ設定
 		if (loginUserDto.getLeaveDate() != null) {
 			attendanceForm
@@ -272,9 +280,12 @@ public class StudentAttendanceService {
 					.setStudentAttendanceId(attendanceManagementDto.getStudentAttendanceId());
 			dailyAttendanceForm
 					.setTrainingDate(dateUtil.toString(attendanceManagementDto.getTrainingDate()));
-			dailyAttendanceForm
-					.setTrainingStartTime(attendanceManagementDto.getTrainingStartTime());
+			
+			dailyAttendanceForm.setTrainingStartTime(attendanceManagementDto.getTrainingStartTime());
 			dailyAttendanceForm.setTrainingEndTime(attendanceManagementDto.getTrainingEndTime());
+			/*Task26*/
+			
+			
 			if (attendanceManagementDto.getBlankTime() != null) {
 				dailyAttendanceForm.setBlankTime(attendanceManagementDto.getBlankTime());
 				dailyAttendanceForm.setBlankTimeValue(String.valueOf(
@@ -330,6 +341,8 @@ public class StudentAttendanceService {
 			}
 			tStudentAttendance.setLmsUserId(lmsUserId);
 			tStudentAttendance.setAccountId(loginUserDto.getAccountId());
+
+			/*-------オリジナル出退勤リスト追加-----------*/
 			// 出勤時刻整形
 			TrainingTime trainingStartTime = null;
 			trainingStartTime = new TrainingTime(dailyAttendanceForm.getTrainingStartTime());
@@ -337,6 +350,26 @@ public class StudentAttendanceService {
 			// 退勤時刻整形
 			TrainingTime trainingEndTime = null;
 			trainingEndTime = new TrainingTime(dailyAttendanceForm.getTrainingEndTime());
+			/*-------オリジナル出退勤リスト追加-----------*/
+
+			
+			/*
+			 * 下記でドロップダウンリストの追記によるリストに「時間」と「分」追加の変更
+			 * 出勤時間（時）	＝	勤怠管理画面用DTOリスト[n]．勤怠Utilを使用して出勤時間の時間を抜き出す
+			出勤時間（分）	＝	勤怠管理画面用DTOリスト[n]．勤怠Utilを使用して出勤時間の分を抜き出す
+			退勤時間（時）	＝	勤怠管理画面用DTOリスト[n]．勤怠Utilを使用して退勤時間の時間を抜き出す
+			退勤時間（分）	＝	勤怠管理画面用DTOリスト[n]．勤怠Utilを使用して退勤時間の分を抜き出す
+			 * 
+			 * */
+			TrainingTime trainingStartTimeHour = null;
+			TrainingTime trainingStartTimeMinute = null;
+			
+			TrainingTime trainingEndTimeHour = null;
+			TrainingTime trainingEndTimeMinute = null;
+
+			
+			/*-------------「時間」と「分」追加の変更、以上-------------------*/
+
 			tStudentAttendance.setTrainingEndTime(trainingEndTime.getFormattedString());
 			// 中抜け時間
 			tStudentAttendance.setBlankTime(dailyAttendanceForm.getBlankTime());

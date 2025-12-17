@@ -54,6 +54,8 @@
 								</th:block>
 								<td class="w140">[[${dailyAttendanceForm.dispTrainingDate}]]</td>
 								<td class="w300">[[${dailyAttendanceForm.sectionName}]]</td>
+
+								<!--オリジナル時間表示（手入力）-->
 								<td class="w70">
 									<input type="text" th:name="|attendanceList[${stat.index}].trainingStartTime|"
 										th:value="${dailyAttendanceForm.trainingStartTime}" class="form-control" />
@@ -62,6 +64,15 @@
 									<input type="text" th:name="|attendanceList[${stat.index}].trainingEndTime|"
 										th:value="${dailyAttendanceForm.trainingEndTime}" class="form-control" />
 								</td>
+
+								<!--Task26時間入力変更、以下から
+								・入力済：SQLから取得し、「時間」と「分」に分けてセレクトボックスで表示
+								・未入力：セレクトボックスで表示し、選択した時間と分を結合してSQLに保存・変更
+								-->
+
+								
+								<!--								Task26時間入力変更、以上終了-->
+
 								<td class="w80">
 									<select th:name="|attendanceList[${stat.index}].blankTime|" class="form-control">
 										<option th:each="blankTime : ${attendanceForm.blankTimes}"
