@@ -246,9 +246,10 @@ public class StudentAttendanceService {
 	 * 
 	 * @param attendanceManagementDtoList
 	 * @return 勤怠編集フォーム
+	 * @throws ParseException 
 	 */
 	public AttendanceForm setAttendanceForm(
-			List<AttendanceManagementDto> attendanceManagementDtoList) {
+			List<AttendanceManagementDto> attendanceManagementDtoList) throws ParseException {
 
 		AttendanceForm attendanceForm = new AttendanceForm();
 		attendanceForm.setAttendanceList(new ArrayList<DailyAttendanceForm>());
@@ -257,13 +258,17 @@ public class StudentAttendanceService {
 		attendanceForm.setUserName(loginUserDto.getUserName());
 		attendanceForm.setLeaveFlg(loginUserDto.getLeaveFlg());
 		
-		//Task26の追記！！！
-		/*
-		 * 勤怠FORM．中抜け時間（選択肢）	＝	勤怠Utilを使用して選択肢用の中抜け時間マップを取得
-		 * 勤怠FORM．時間マップ（選択肢）   ＝	勤怠Utilを使用して選択肢用の時間マップを取得 
-		 * 勤怠FORM．分マップ（選択肢）	    ＝	勤怠Utilを使用して選択肢用の分マップを取得
+		//Task26
+		/*勤怠FORM．中抜け時間（選択肢）	＝	勤怠Utilを使用して選択肢用の中抜け時間マップを取得
+		 * 既存
 		 * */
 		attendanceForm.setBlankTimes(attendanceUtil.setBlankTime());
+		
+		/** 勤怠FORM．時間マップ（選択肢）   ＝	勤怠Utilを使用して選択肢用の時間マップを取得 
+		 * 勤怠FORM．分マップ（選択肢）	    ＝	勤怠Utilを使用して選択肢用の分マップを取得
+		 * */
+		attendanceForm.setHourMap(attendanceUtil.getHourMap());
+		attendanceForm.setMinuteMap(attendanceUtil.getMinuteMap());
 		
 		// 途中退校している場合のみ設定
 		if (loginUserDto.getLeaveDate() != null) {
@@ -281,16 +286,21 @@ public class StudentAttendanceService {
 			dailyAttendanceForm
 					.setTrainingDate(dateUtil.toString(attendanceManagementDto.getTrainingDate()));
 			
-			dailyAttendanceForm.setTrainingStartTime(attendanceManagementDto.getTrainingStartTime());
-			dailyAttendanceForm.setTrainingEndTime(attendanceManagementDto.getTrainingEndTime());
-			/*Task26*/
+//			dailyAttendanceForm.setTrainingStartTime(attendanceManagementDto.getTrainingStartTime());
+//			dailyAttendanceForm.setTrainingEndTime(attendanceManagementDto.getTrainingEndTime());
 			
+			dailyAttendanceForm.setTrainingStartTimeHour(attendanceUtil.getHour(attendanceManagementDto.getTrainingStartTime()).toString());	
+			dailyAttendanceForm.setTrainingStartTimeMinute(attendanceUtil.getMinute(attendanceManagementDto.getTrainingStartTime()).toString());	
+			dailyAttendanceForm.setTrainingEndTimeHour(attendanceManagementDto.getTrainingEndTime());	
+			dailyAttendanceForm.setTrainingEndTimeMinute(attendanceManagementDto.getTrainingEndTime());	
 			
 			if (attendanceManagementDto.getBlankTime() != null) {
 				dailyAttendanceForm.setBlankTime(attendanceManagementDto.getBlankTime());
 				dailyAttendanceForm.setBlankTimeValue(String.valueOf(
 						attendanceUtil.calcBlankTime(attendanceManagementDto.getBlankTime())));
 			}
+			
+
 			dailyAttendanceForm.setStatus(String.valueOf(attendanceManagementDto.getStatus()));
 			dailyAttendanceForm.setNote(attendanceManagementDto.getNote());
 			dailyAttendanceForm.setSectionName(attendanceManagementDto.getSectionName());
@@ -342,35 +352,57 @@ public class StudentAttendanceService {
 			tStudentAttendance.setLmsUserId(lmsUserId);
 			tStudentAttendance.setAccountId(loginUserDto.getAccountId());
 
-			/*-------オリジナル出退勤リスト追加-----------*/
 			// 出勤時刻整形
 			TrainingTime trainingStartTime = null;
 			trainingStartTime = new TrainingTime(dailyAttendanceForm.getTrainingStartTime());
-			tStudentAttendance.setTrainingStartTime(trainingStartTime.getFormattedString());
+//			tStudentAttendance.setTrainingStartTime(trainingStartTime.getFormattedString());
+			
 			// 退勤時刻整形
 			TrainingTime trainingEndTime = null;
 			trainingEndTime = new TrainingTime(dailyAttendanceForm.getTrainingEndTime());
-			/*-------オリジナル出退勤リスト追加-----------*/
-
+//			tStudentAttendance.setTrainingEndTime(trainingEndTime.getFormattedString());
 			
 			/*
 			 * 下記でドロップダウンリストの追記によるリストに「時間」と「分」追加の変更
 			 * 出勤時間（時）	＝	勤怠管理画面用DTOリスト[n]．勤怠Utilを使用して出勤時間の時間を抜き出す
 			出勤時間（分）	＝	勤怠管理画面用DTOリスト[n]．勤怠Utilを使用して出勤時間の分を抜き出す
-			退勤時間（時）	＝	勤怠管理画面用DTOリスト[n]．勤怠Utilを使用して退勤時間の時間を抜き出す
+			 * 
+			 * */
+			String trainingStartStr = trainingStartTime.toString();
+			Integer trainingStartTimeHour = null;
+			trainingStartTimeHour = attendanceUtil.getHour(trainingStartStr);
+			//Listに格納
+			dailyAttendanceForm.setTrainingStartTimeHour(trainingStartTimeHour.toString());
+			
+			Integer trainingStartTimeMinute = null;
+			trainingStartTimeMinute = attendanceUtil.getMinute(trainingStartStr);
+			//Listに格納
+			dailyAttendanceForm.setTrainingStartTimeMinute(trainingStartTimeMinute.toString());
+			
+			
+			String startTimeString = String.format("%02d:%02d", trainingStartTimeHour, trainingStartTimeMinute);
+			tStudentAttendance.setTrainingEndTime(startTimeString);
+			
+			/*
+			 * 下記でドロップダウンリストの追記によるリストに「時間」と「分」追加の変更
+			 * 退勤時間（時）	＝	勤怠管理画面用DTOリスト[n]．勤怠Utilを使用して退勤時間の時間を抜き出す
 			退勤時間（分）	＝	勤怠管理画面用DTOリスト[n]．勤怠Utilを使用して退勤時間の分を抜き出す
 			 * 
 			 * */
-			TrainingTime trainingStartTimeHour = null;
-			TrainingTime trainingStartTimeMinute = null;
+			String trainingEndStr = trainingEndTime.toString();
+			Integer trainingEndTimeHour = null;
+			trainingEndTimeHour = attendanceUtil.getHour(trainingEndStr);
+			//Listに格納
+			dailyAttendanceForm.setTrainingEndTimeHour(trainingEndTimeHour.toString());
+			Integer trainingEndTimeMinute = null;
+			trainingEndTimeMinute = attendanceUtil.getMinute(trainingEndStr);
+			//Listに格納
+			dailyAttendanceForm.setTrainingEndTimeMinute(trainingEndTimeMinute.toString());
 			
-			TrainingTime trainingEndTimeHour = null;
-			TrainingTime trainingEndTimeMinute = null;
-
+			String endTimeString = String.format("%02d:%02d", trainingEndTimeHour, trainingEndTimeMinute);
+			tStudentAttendance.setTrainingEndTime(endTimeString);
 			
-			/*-------------「時間」と「分」追加の変更、以上-------------------*/
-
-			tStudentAttendance.setTrainingEndTime(trainingEndTime.getFormattedString());
+			
 			// 中抜け時間
 			tStudentAttendance.setBlankTime(dailyAttendanceForm.getBlankTime());
 			// 遅刻早退ステータス

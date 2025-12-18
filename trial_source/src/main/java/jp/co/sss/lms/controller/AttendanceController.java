@@ -107,9 +107,10 @@ public class AttendanceController {
 	 * 
 	 * @param model
 	 * @return 勤怠情報直接変更画面
+	 * @throws ParseException 
 	 */
 	@RequestMapping(path = "/update")
-	public String update(Model model) {
+	public String update(Model model) throws ParseException {
 
 		// 勤怠管理リストの取得
 		List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
@@ -134,7 +135,7 @@ public class AttendanceController {
 	@RequestMapping(path = "/update", params = "complete", method = RequestMethod.POST)
 	public String complete(AttendanceForm attendanceForm, Model model, BindingResult result)
 			throws ParseException {
-
+		
 		// 更新
 		String message = studentAttendanceService.update(attendanceForm);
 		model.addAttribute("message", message);
@@ -142,14 +143,6 @@ public class AttendanceController {
 		List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
 				.getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId());
 		model.addAttribute("attendanceManagementDtoList", attendanceManagementDtoList);
-		
-		
-		/*
-		 * ①．出勤／退勤時間をhh:mm形式に設定		
-		Ⅰ．入力パラメータ．勤怠リスト[n]の件数分、下記設定を行う										
-				入力パラメータ．勤怠リスト[n]．出勤時間	hh:mm形式で設定
-				入力パラメータ．勤怠リスト[n]．退勤時間	h:mm形式で設定
-		 */
 		
 		
 		return "attendance/detail";

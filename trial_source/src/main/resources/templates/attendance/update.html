@@ -29,7 +29,9 @@
 							<th class="w140">日付</th>
 							<th class="w300">コース内容</th>
 							<th class="w70">出勤</th>
+							<th class="w70"></th>
 							<th class="w70">退勤</th>
+							<th class="w70"></th>
 							<th class="w80">中抜け時間</th>
 							<th class="w70">ステータス</th>
 							<th class="w240">備考</th>
@@ -56,20 +58,52 @@
 								<td class="w300">[[${dailyAttendanceForm.sectionName}]]</td>
 
 								<!--オリジナル時間表示（手入力）-->
-								<td class="w70">
-									<input type="text" th:name="|attendanceList[${stat.index}].trainingStartTime|"
-										th:value="${dailyAttendanceForm.trainingStartTime}" class="form-control" />
-								</td>
-								<td class="w70">
-									<input type="text" th:name="|attendanceList[${stat.index}].trainingEndTime|"
-										th:value="${dailyAttendanceForm.trainingEndTime}" class="form-control" />
-								</td>
+<!--								<td class="w70">-->
+<!--									<input type="text" th:name="|attendanceList[${stat.index}].trainingStartTime|"-->
+<!--										th:value="${dailyAttendanceForm.trainingStartTime}" class="form-control" />-->
+<!--								</td>-->
+<!--								<td class="w70">-->
+<!--									<input type="text" th:name="|attendanceList[${stat.index}].trainingEndTime|"-->
+<!--										th:value="${dailyAttendanceForm.trainingEndTime}" class="form-control" />-->
+<!--								</td>-->
 
 								<!--Task26時間入力変更、以下から
 								・入力済：SQLから取得し、「時間」と「分」に分けてセレクトボックスで表示
 								・未入力：セレクトボックスで表示し、選択した時間と分を結合してSQLに保存・変更
 								-->
-
+								<td class="w70">
+									<select th:name="|attendanceList[${stat.index}].trainingStartTimeHour|" class="form-control">
+										<option th:each="hourMap : ${attendanceForm.hourMap}"
+											th:value="${hourMap.key}" th:inlne="text" class="form-control"
+											th:selected="${hourMap.key == dailyAttendanceForm.trainingStartTimeHour}">
+											[[${hourMap.value}]]</option>
+									</select>
+								</td>
+								<td class="w70">
+									<select th:name="|attendanceList[${stat.index}].trainingStartTimeMinute|" class="form-control">
+										<option th:each="minuteMap : ${attendanceForm.minuteMap}"
+											th:value="${minuteMap.key}" th:inlne="text" class="form-control"
+											th:selected="${minuteMap.key == dailyAttendanceForm.trainingStartTimeMinute}">
+											[[${minuteMap.value}]]</option>
+									</select>
+								</td>
+								<td class="w70">
+									<select th:name="|attendanceList[${stat.index}].trainingEndTimeHour|" class="form-control">
+										<option th:each="hourMap : ${attendanceForm.hourMap}"
+											th:value="${hourMap.key}" th:inlne="text" class="form-control"
+											th:selected="${hourMap.key == dailyAttendanceForm.trainingEndTimeHour}">
+											[[${hourMap.value}]]</option>
+									</select>
+								</td>
+								<td class="w70">
+									<select th:name="|attendanceList[${stat.index}].trainingEndTimeMinute|" class="form-control">
+										<option th:each="minuteMap : ${attendanceForm.minuteMap}"
+											th:value="${minuteMap.key}" th:inlne="text" class="form-control"
+											th:selected="${minuteMap.key == dailyAttendanceForm.trainingEndTimeMinute}">
+											[[${minuteMap.value}]]</option>
+									</select>
+								</td>
+								
 								
 								<!--								Task26時間入力変更、以上終了-->
 

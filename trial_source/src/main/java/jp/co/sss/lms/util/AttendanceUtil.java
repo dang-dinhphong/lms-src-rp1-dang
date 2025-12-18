@@ -156,15 +156,32 @@ public class AttendanceUtil {
 	}
 	/*----------------------------Task26ゲッタ------------------------------*/
 	
-	public Integer getHour(String formattedHour) {
-		Integer hour = Integer.valueOf(formattedHour);
-		return hour;
+	public Integer getHour(String formattedHour)throws IndexOutOfBoundsException{
+		if(formattedHour != null) {
+			String hourString = formattedHour.substring(0, formattedHour.indexOf(":")); 
+			System.out.println("hourStr:" + hourString);
+			Integer hour = Integer.parseInt(hourString);
+			return hour;
+		}else {
+			Integer hour = null;
+			return hour;
+		}
 	}
 	
-	public Integer getMinute(String formattedMinute) {
-		Integer minute = Integer.valueOf(formattedMinute);
-		return minute;
+	public Integer getMinute(String formattedMinute)throws IndexOutOfBoundsException{
+		if(formattedMinute != null) {
+			String minuteString = formattedMinute.substring(formattedMinute.indexOf(":")+1);
+			System.out.println("minStr:" + minuteString);
+			Integer minute = Integer.parseInt(minuteString);
+			return minute;
+		}else {
+			Integer minute = null;
+			return minute;
+		}
+		
 	}
+	
+	
 	/*----------------------------Task26------------------------------*/
 	
 	
