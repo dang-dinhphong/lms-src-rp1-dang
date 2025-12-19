@@ -22,11 +22,11 @@ public class DailyAttendanceForm {
 	private String trainingEndTime;
 	
 	/*Task26用、時間と分を別で取得*/
-	private String trainingStartTimeHour;
-	private String trainingStartTimeMinute;
+	private Integer trainingStartTimeHour;
+	private Integer trainingStartTimeMinute;
 	
-	private String trainingEndTimeHour;
-	private String trainingEndTimeMinute;
+	private Integer trainingEndTimeHour;
+	private Integer trainingEndTimeMinute;
 	
 	/** 中抜け時間 */
 	private Integer blankTime;
