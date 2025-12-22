@@ -46,7 +46,9 @@ public class AttendanceController {
 		List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
 				.getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId());
 		model.addAttribute("attendanceManagementDtoList", attendanceManagementDtoList);
-		//過去未入力がある場合、ダイヤログ表示する
+		
+		//Task25：過去未入力の場合の表示
+		//author:ダンディンフォン
 		model.addAttribute("emptiedAttendanceCheck",studentAttendanceService.emptiedAttendanceCheck(loginUserDto.getLmsUserId()));
 
 		return "attendance/detail";

@@ -89,22 +89,8 @@
 			return hours + ':' + minutes;
 		}
 
-		/*
-		*function使うときにさらにwindow.onload()使うと
-		functionが実行されない場合、当然window.onload()も実行されない
-		
-		⇒　$(function showAlert(){...});(window.onloadは記述しない)
 
-		$()を追加するとhtmlは明示的に実行させる
-		*/
 		$(function showAttendanceAlert() {
-			/*オブジェクト作成
-			最後の記述は必要
-			if文の条件は既に暗黙的にboolean型なので
-			showAttendanceAlertCondition === true
-			⇒　アラート表示
-			（Serviceでの実行結果は）
-			*/
 			var showAttendanceAlertCondition = /*[[${emptiedAttendanceCheck}]]*/ "showAttendanceAlertCondition";
 			if (showAttendanceAlertCondition) {
 				alert("過去日の勤怠に未入力があります。");

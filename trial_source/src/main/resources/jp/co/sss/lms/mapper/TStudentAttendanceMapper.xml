@@ -86,6 +86,9 @@
 		WHERE student_attendance_id = #{studentAttendanceId}
 	</update>
 	
+	<!-- Task25：過去未入力の場合の表示
+	add: ダンディンフォン
+	 -->
 	<select id="notEnterCount" resultType="Integer">
 		SELECT COUNT(*)
 		FROM t_student_attendance

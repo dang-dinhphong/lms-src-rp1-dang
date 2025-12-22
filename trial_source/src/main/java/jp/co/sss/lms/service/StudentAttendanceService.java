@@ -75,37 +75,28 @@ public class StudentAttendanceService {
 	}
 
 	/**
+	 * Task25：過去未入力の場合の表示
 	 * 過去未入力箇所を判定する
 	 * 
+	 * @author ダンディンフォン
 	 * @param lmsUserId 受験生番号
-	 * @return countEmpty > 0、boolean型となる
+	 * @return 取得した未入力カウント数が0より大きい場合、trueを返し、過去日未入力確認ダイアログを表示
+	 * それ以外はfalseを返す
+	 * 
 	 * @throws ParseException 日付のフォーマット・変換に必要
 	 */
 	public boolean emptiedAttendanceCheck(Integer lmsUserId) throws ParseException {
 
-		/*入力抜けをカウント
-		 *現在日付取得
-		 */
+		//現在日付取得
 		Date date = new Date();
-
-		/*sdf = フォーマットの決め方
-		 * 比較する際に時分秒を無くする必要ある
-		 * 時分秒省略することで本日未入力によるアラートを防げる
-		*/
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-
-		//現在日付をsdfでフォーマット(Date>String)
 		String today = sdf.format(date);
-		//parseメソッドでString>Dateにキャスト
 		Date trainingDate = sdf.parse(today);
 
-		/*過去未入力箇所をカウントする処理*/
+		//過去日の未入力数をカウント
 		Integer countEmpty = tStudentAttendanceMapper
 				.notEnterCount(lmsUserId, Constants.DB_FLG_FALSE, trainingDate);
 
-		/*return文で簡単にbooleanとして返せる
-		 * countEmpty > 0 == trueと暗黙的に
-		 * */
 		return countEmpty > 0;
 
 	}
@@ -357,7 +348,8 @@ public class StudentAttendanceService {
 			}
 			tStudentAttendance.setLmsUserId(lmsUserId);
 			tStudentAttendance.setAccountId(loginUserDto.getAccountId());
-
+			
+			//出勤退勤時間手入力
 			// 出勤時刻整形
 			//			TrainingTime trainingStartTime = null;
 			//			trainingStartTime = new TrainingTime(dailyAttendanceForm.getTrainingStartTime());
@@ -366,13 +358,15 @@ public class StudentAttendanceService {
 			//			TrainingTime trainingEndTime = null;
 			//			trainingEndTime = new TrainingTime(dailyAttendanceForm.getTrainingEndTime());
 			//			tStudentAttendance.setTrainingEndTime(trainingEndTime.getFormattedString());
-
+			
+			
+			//Task26：出勤・退勤時間の入力方法変更
 			TrainingTime trainingStartTime = null;
 			TrainingTime trainingEndTime = null;
 
 			if (dailyAttendanceForm.getTrainingStartTimeHour() == null
-					&& dailyAttendanceForm.getTrainingStartTimeMinute() == null) {
-				tStudentAttendance.setTrainingStartTime(null);
+					|| dailyAttendanceForm.getTrainingStartTimeMinute() == null) {
+				tStudentAttendance.setTrainingStartTime("");
 			} else {
 				String trainingStartTimeStr = String.format("%1$02d:%2$02d",
 						dailyAttendanceForm.getTrainingStartTimeHour(),
@@ -382,8 +376,8 @@ public class StudentAttendanceService {
 			}
 
 			if (dailyAttendanceForm.getTrainingEndTimeHour() == null
-					&& dailyAttendanceForm.getTrainingEndTimeMinute() == null) {
-				tStudentAttendance.setTrainingEndTime(null);
+					|| dailyAttendanceForm.getTrainingEndTimeMinute() == null) {
+				tStudentAttendance.setTrainingEndTime("");
 			} else {
 				String trainingEndTimeStr = String.format("%1$02d:%2$02d",
 						dailyAttendanceForm.getTrainingEndTimeHour(),

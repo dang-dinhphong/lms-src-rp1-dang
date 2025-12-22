@@ -67,7 +67,9 @@ public interface TStudentAttendanceMapper {
 	
 	
 	/**
+	 * Task25：過去未入力の場合の表示
 	 * 過去日未入力件数をカウントする
+	 * @author ダンディンフォン
 	 * @param lmsUserId
 	 * @param deleteFlg
 	 * @param dateUtil
