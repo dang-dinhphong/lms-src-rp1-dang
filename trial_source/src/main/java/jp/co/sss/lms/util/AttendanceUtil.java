@@ -131,59 +131,49 @@ public class AttendanceUtil {
 		}
 		return map;
 	}
-	
+
 	/*----------------------------Task26マップ------------------------------*/
 	/**
 	 * @return
 	 */
 	public LinkedHashMap<Integer, String> getHourMap() {
-        LinkedHashMap<Integer, String> hourMap = new LinkedHashMap<>();
-        hourMap.put(null,"");
-        for (int h = 0;  h <= 23; h++) {
-        	String selectedHour = String.format("%02d", h);
-        	hourMap.put(h, selectedHour);
-            
-        }
-        return hourMap;
-    }
-	
+		LinkedHashMap<Integer, String> hourMap = new LinkedHashMap<>();
+		hourMap.put(null, "");
+		for (int h = 0; h <= 23; h++) {
+			String selectedHour = String.format("%02d", h);
+			hourMap.put(h, selectedHour);
+
+		}
+		return hourMap;
+	}
+
 	public LinkedHashMap<Integer, String> getMinuteMap() {
 		LinkedHashMap<Integer, String> minuteMap = new LinkedHashMap<>();
-		minuteMap.put(null,"");
+		minuteMap.put(null, "");
 		for (int m = 0; m < 60; m++) {
 			String selectedMinute = String.format("%02d", m);
-        	minuteMap.put(m, selectedMinute);			
+			minuteMap.put(m, selectedMinute);
 		}
 		return minuteMap;
 	}
 	/*----------------------------Task26ゲッタ------------------------------*/
-	
-	public Integer getHour(String formattedHour){
-		if(formattedHour.isBlank()) {
-			return null;
-		}
-		String hourString = formattedHour.substring(0, formattedHour.indexOf(":")); 
-		Integer hour = Integer.parseInt(hourString);
-		System.out.println("hourStr:" + hour);
-		return hour;
-	}
-	
-	public Integer getMinute(String formattedMinute){
-		if(formattedMinute.isBlank()) {
-			return null;
-		}
-		String minuteString = formattedMinute.substring(formattedMinute.indexOf(":")+1);
-		Integer minute = Integer.parseInt(minuteString);
-		System.out.println("minStr:" + minute);
 
-		return minute;
-		
+	public Integer getHour(String formattedHour) {
+		if (formattedHour == null || formattedHour.isBlank()) {
+			return null;
+		}
+		return Integer.parseInt(formattedHour.substring(0, 2));
 	}
-	
-	
+
+	public Integer getMinute(String formattedMinute) {
+		if (formattedMinute == null || formattedMinute.isBlank()) {
+			return null;
+		}
+		return Integer.parseInt(formattedMinute.substring(formattedMinute.length() - 2));
+	}
+
 	/*----------------------------Task26追記・以上------------------------------*/
-	
-	
+
 	/**
 	 * 研修日の判定
 	 * 
