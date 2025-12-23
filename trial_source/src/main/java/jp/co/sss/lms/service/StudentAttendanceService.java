@@ -9,6 +9,8 @@ import java.util.List;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 
 import jp.co.sss.lms.dto.AttendanceManagementDto;
 import jp.co.sss.lms.dto.LoginUserDto;
@@ -284,13 +286,12 @@ public class StudentAttendanceService {
 					attendanceUtil.getHour(attendanceManagementDto.getTrainingStartTime()));
 			dailyAttendanceForm.setTrainingStartTimeMinute(
 					attendanceUtil.getMinute(attendanceManagementDto.getTrainingStartTime()));
-			
+
 			dailyAttendanceForm.setTrainingEndTimeHour(
 					attendanceUtil.getHour(attendanceManagementDto.getTrainingEndTime()));
 			dailyAttendanceForm.setTrainingEndTimeMinute(
 					attendanceUtil.getMinute(attendanceManagementDto.getTrainingEndTime()));
 
-			
 			if (attendanceManagementDto.getBlankTime() != null) {
 				dailyAttendanceForm.setBlankTime(attendanceManagementDto.getBlankTime());
 				dailyAttendanceForm.setBlankTimeValue(String.valueOf(
@@ -348,7 +349,7 @@ public class StudentAttendanceService {
 			}
 			tStudentAttendance.setLmsUserId(lmsUserId);
 			tStudentAttendance.setAccountId(loginUserDto.getAccountId());
-			
+
 			//出勤退勤時間手入力
 			// 出勤時刻整形
 			//			TrainingTime trainingStartTime = null;
@@ -358,8 +359,7 @@ public class StudentAttendanceService {
 			//			TrainingTime trainingEndTime = null;
 			//			trainingEndTime = new TrainingTime(dailyAttendanceForm.getTrainingEndTime());
 			//			tStudentAttendance.setTrainingEndTime(trainingEndTime.getFormattedString());
-			
-			
+
 			//Task26：出勤・退勤時間の入力方法変更
 			TrainingTime trainingStartTime = null;
 			TrainingTime trainingEndTime = null;
@@ -368,16 +368,19 @@ public class StudentAttendanceService {
 					|| dailyAttendanceForm.getTrainingStartTimeMinute() == null) {
 				tStudentAttendance.setTrainingStartTime("");
 			} else {
+
 				String trainingStartTimeStr = String.format("%1$02d:%2$02d",
 						dailyAttendanceForm.getTrainingStartTimeHour(),
 						dailyAttendanceForm.getTrainingStartTimeMinute());
 				trainingStartTime = new TrainingTime(trainingStartTimeStr);
 				tStudentAttendance.setTrainingStartTime(trainingStartTime.getFormattedString());
+
 			}
 
 			if (dailyAttendanceForm.getTrainingEndTimeHour() == null
 					|| dailyAttendanceForm.getTrainingEndTimeMinute() == null) {
 				tStudentAttendance.setTrainingEndTime("");
+
 			} else {
 				String trainingEndTimeStr = String.format("%1$02d:%2$02d",
 						dailyAttendanceForm.getTrainingEndTimeHour(),
@@ -398,11 +401,13 @@ public class StudentAttendanceService {
 			}
 			// 備考
 			tStudentAttendance.setNote(dailyAttendanceForm.getNote());
+
 			// 更新者と更新日時
 			tStudentAttendance.setLastModifiedUser(loginUserDto.getLmsUserId());
 			tStudentAttendance.setLastModifiedDate(date);
 			// 削除フラグ
 			tStudentAttendance.setDeleteFlg(Constants.DB_FLG_FALSE);
+
 			// 登録用Listへ追加
 			tStudentAttendanceList.add(tStudentAttendance);
 		}
@@ -419,4 +424,71 @@ public class StudentAttendanceService {
 		// 完了メッセージ
 		return messageUtil.getMessage(Constants.PROP_KEY_ATTENDANCE_UPDATE_NOTICE);
 	}
+
+	public void inputCheck(AttendanceForm attendanceForm, BindingResult result) {
+		for (int i = 0; i < attendanceForm.getAttendanceList().size(); i++) {
+			DailyAttendanceForm dailyAttendanceForm = attendanceForm.getAttendanceList().get(i);
+			// 備考.文字数上限チェック
+			if (dailyAttendanceForm.getNote().length() > 100) {
+				result.addError(new FieldError(result.getObjectName(),"attendanceList[stat.index].note",
+						messageUtil.getMessage(Constants.VALID_KEY_MAXLENGTH)));
+			}
+			//出勤時間の時と分が両方入力有りチェック
+			if (dailyAttendanceForm.getTrainingStartTimeHour() == null
+					|| dailyAttendanceForm.getTrainingStartTimeMinute() == null) {
+				result.addError(new FieldError(result.getObjectName(), "attendanceList[stat.index].trainingStartTime",
+						messageUtil.getMessage(Constants.INPUT_INVALID)));
+			}
+
+			//退勤時間の時と分が両方入力有りチェック
+			if (dailyAttendanceForm.getTrainingEndTimeHour() == null
+					|| dailyAttendanceForm.getTrainingEndTimeMinute() == null) {
+				result.addError(new FieldError(result.getObjectName(), "attendanceList[stat.index].trainingEndTime",
+						messageUtil.getMessage(Constants.INPUT_INVALID)));
+			}
+			
+			if ((dailyAttendanceForm.getTrainingEndTimeHour() != null
+					&& dailyAttendanceForm.getTrainingEndTimeMinute() != null)
+					&&(dailyAttendanceForm.getTrainingStartTimeHour() == null
+					|| dailyAttendanceForm.getTrainingStartTimeMinute() == null)) {
+				result.addError(new FieldError(result.getObjectName(), "attendanceList[].trainingEndTime",
+						messageUtil.getMessage(Constants.VALID_KEY_ATTENDANCE_PUNCHINEMPTY)));
+			}
+			
+//			TrainingTime trainingStartTime = null;
+//			TrainingTime trainingEndTime = null;
+//
+//			String trainingStartTimeStr = String.format("%1$02d:%2$02d",
+//					dailyAttendanceForm.getTrainingStartTimeHour(),
+//					dailyAttendanceForm.getTrainingStartTimeMinute());
+//			trainingStartTime = new TrainingTime(trainingStartTimeStr);
+//			tStudentAttendance.setTrainingStartTime(trainingStartTime.getFormattedString());
+//
+//			String trainingEndTimeStr = String.format("%1$02d:%2$02d",
+//					dailyAttendanceForm.getTrainingEndTimeHour(),
+//					dailyAttendanceForm.getTrainingEndTimeMinute());
+//			trainingEndTime = new TrainingTime(trainingEndTimeStr);
+//			tStudentAttendance.setTrainingEndTime(trainingEndTime.getFormattedString());
+			
+//			if(Integer.parseInt(trainingEndTime.subtract(trainingStartTime).toString())>1) {
+//				result.addError(new FieldError(result.getObjectName(), "inputError",
+//						messageUtil.getMessage(Constants.VALID_KEY_ATTENDANCE_TRAININGTIMERANGE)));
+//			}
+//			
+//			// 中抜け時間
+//			tStudentAttendance.setBlankTime(dailyAttendanceForm.getBlankTime());
+//			
+//			if(!tStudentAttendance.getBlankTime()
+//					.equals(Integer.parseInt(trainingEndTime.subtract(trainingStartTime).toString()))) {
+//				result.addError(new FieldError(result.getObjectName(), "inputError",
+//						messageUtil.getMessage(Constants.VALID_KEY_ATTENDANCE_BLANKTIMEERROR)));
+//			}
+			
+			attendanceForm.setBlankTimes(attendanceUtil.setBlankTime());
+			attendanceForm.setHourMap(attendanceUtil.getHourMap());
+			attendanceForm.setMinuteMap(attendanceUtil.getMinuteMap());
+
+		}
+	}
+
 }

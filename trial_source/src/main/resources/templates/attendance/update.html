@@ -12,6 +12,18 @@
 		<h2>勤怠管理</h2>
 	</th:block>
 
+	<!-- エラーメッセージ -->
+	<th:block th:if="${not #strings.isEmpty(inputError)}" id="inputError">
+		<ul style="padding-left: 0; list-style: none;">
+			<li>
+				<span th:each="error:${#fields.allErrors()}" th:object="${attendanceForm}">
+					<span th:text="${error.message}" class="help-inline error"></span>
+				</span>
+			</li>
+
+		</ul>
+	</th:block>
+
 	<th:block th:if="${session.loginUserDto.role != '0001'}">
 		<h2>勤怠管理 <small>( [[${attendanceForm.userName}]] )</small></h2>
 		<th:block th:if="${session.loginUserDto.leaveFlg == '1'}">
