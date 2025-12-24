@@ -4,25 +4,29 @@
 <head>
 	<meta charset="UTF-8">
 	<title>勤怠情報変更｜LMS</title>
+	<style>
+		.errorInput {
+			border: 1px solid red !important;
+			background-color: #fff0f0 !important;
+			color: red !important;
+		}
+	</style>
 </head>
 
 <body>
-
 	<th:block th:if="${session.loginUserDto.role == '0001'}">
 		<h2>勤怠管理</h2>
 	</th:block>
 
-	<!-- エラーメッセージ -->
-	<th:block th:if="${not #strings.isEmpty(inputError)}" id="inputError">
-		<ul style="padding-left: 0; list-style: none;">
-			<li>
-				<span th:each="error:${#fields.allErrors()}" th:object="${attendanceForm}">
-					<span th:text="${error.message}" class="help-inline error"></span>
-				</span>
-			</li>
-
-		</ul>
-	</th:block>
+	<form th:action="@{/attendance/update}" th:object="${attendanceForm}" method="post">
+		<div th:if="${#fields.hasAnyErrors()}" class="alert alert-danger">
+			<ul style="padding-left: 0; list-style: none;">
+				<li th:each="err : ${#sets.toSet(#fields.allErrors())}">
+					<span th:text="${err}" class="error"></span>
+				</li>
+			</ul>
+		</div>
+	</form>
 
 	<th:block th:if="${session.loginUserDto.role != '0001'}">
 		<h2>勤怠管理 <small>( [[${attendanceForm.userName}]] )</small></h2>
@@ -34,12 +38,13 @@
 	<div class="row">
 		<div class="bs-component col-sm-12">
 
-			<form th:action="@{/attendance/update}" method="post" onsubmit="return confirmUpdate();">
+			<form th:action="@{/attendance/update}" method="post" onsubmit="return confirmUpdate();"th:object="${attendanceForm}">
 				<table class="table table-hover dataTable no-footer">
 					<thead>
 						<tr>
 							<th class="w140">日付</th>
 							<th class="w300">コース内容</th>
+							<th class="w70"></th>
 							<th class="w70">出勤</th>
 							<th class="w70"></th>
 							<th class="w70">退勤</th>
@@ -79,12 +84,27 @@
 								<!--										th:value="${dailyAttendanceForm.trainingEndTime}" class="form-control" />-->
 								<!--								</td>-->
 
+								<!--Task28：定時ボタン
+								add: ダンディンフォン-->
+								<!--								<td class="w70">-->
+								<!--									<form th:action="@{/attendance/update}" method="post">-->
+								<!--										<input type="hidden" name="rowDate" th:value="${dailyAttendanceForm.trainingDate}">-->
+								<!--										<input type="submit" value="定時" name="fixedTime">-->
+								<!--									</form>-->
+								<!--								</td>-->
+								<td class="w70">
+									<button type="button"
+									style="background-color:yellowgreen; color:white;" 
+									class="btn" onclick="setOnTime(this)">定時</button>
+								</td>
+
+
 								<!--Task26：出勤・退勤時間の入力方法変更
-								add:ダンディンフォン
+								add: ダンディンフォン
 								-->
 								<td class="w70">
 									<select th:name="|attendanceList[${stat.index}].trainingStartTimeHour|"
-										class="form-control">
+										class="form-control" th:errorclass="errorInput">
 										<option th:each="hourMap : ${attendanceForm.hourMap}" th:value="${hourMap.key}"
 											th:inlne="text" class="form-control"
 											th:selected="${hourMap.key == dailyAttendanceForm.trainingStartTimeHour}">
@@ -92,9 +112,11 @@
 											[[${hourMap.value}]]</option>
 									</select>
 								</td>
+
+
 								<td class="w70">
 									<select th:name="|attendanceList[${stat.index}].trainingStartTimeMinute|"
-										class="form-control">
+										class="form-control" th:errorclass="errorInput">
 										<option th:each="minuteMap : ${attendanceForm.minuteMap}"
 											th:value="${minuteMap.key}" th:inlne="text" class="form-control"
 											th:selected="${minuteMap.key == dailyAttendanceForm.trainingStartTimeMinute}">
@@ -103,7 +125,7 @@
 								</td>
 								<td class="w70">
 									<select th:name="|attendanceList[${stat.index}].trainingEndTimeHour|"
-										class="form-control">
+										class="form-control" th:errorclass="errorInput">
 										<option th:each="hourMap : ${attendanceForm.hourMap}" th:value="${hourMap.key}"
 											th:inlne="text" class="form-control"
 											th:selected="${hourMap.key == dailyAttendanceForm.trainingEndTimeHour}">
@@ -112,7 +134,7 @@
 								</td>
 								<td class="w70">
 									<select th:name="|attendanceList[${stat.index}].trainingEndTimeMinute|"
-										class="form-control">
+										class="form-control" th:errorclass="errorInput">
 										<option th:each="minuteMap : ${attendanceForm.minuteMap}"
 											th:value="${minuteMap.key}" th:inlne="text" class="form-control"
 											th:selected="${minuteMap.key == dailyAttendanceForm.trainingEndTimeMinute}">
@@ -159,6 +181,13 @@
 			} else {
 				return false;
 			}
+		}
+		function setOnTime(buttonElement) {
+			let row = buttonElement.closest('tr');
+			row.querySelector('select[name$="trainingStartTimeHour"]').value = "9";
+			row.querySelector('select[name$="trainingStartTimeMinute"]').value = "0";
+			row.querySelector('select[name$="trainingEndTimeHour"]').value = "18";
+			row.querySelector('select[name$="trainingEndTimeMinute"]').value = "0";
 		}
 	</script>
 </body>
