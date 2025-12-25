@@ -5,9 +5,10 @@
 	<meta charset="UTF-8">
 	<title>勤怠情報変更｜LMS</title>
 	<style>
+		/*Task27入力チェック実装用エラーメッセージCSS*/
 		.errorInput {
-			border: 1px solid red !important;
-			background-color: #fff0f0 !important;
+			border: 1px solid #d9edf7 !important;
+			background-color: #d9edf7 !important;
 			color: red !important;
 		}
 	</style>
@@ -18,6 +19,9 @@
 		<h2>勤怠管理</h2>
 	</th:block>
 
+	<!--Task27：入力チェック実装
+	エラーメッセージ表示ブロック
+	add: ダンディンフォン-->
 	<form th:action="@{/attendance/update}" th:object="${attendanceForm}" method="post">
 		<div th:if="${#fields.hasAnyErrors()}" class="alert alert-danger">
 			<ul style="padding-left: 0; list-style: none;">
@@ -38,17 +42,18 @@
 	<div class="row">
 		<div class="bs-component col-sm-12">
 
-			<form th:action="@{/attendance/update}" method="post" onsubmit="return confirmUpdate();"th:object="${attendanceForm}">
+			<form th:action="@{/attendance/update}" method="post" onsubmit="return confirmUpdate();"
+				th:object="${attendanceForm}">
 				<table class="table table-hover dataTable no-footer">
 					<thead>
 						<tr>
 							<th class="w140">日付</th>
-							<th class="w300">コース内容</th>
-							<th class="w70"></th>
+							<th class="w140">コース内容</th>
+							<th class="w70"></th><!--Task28実装によるレイアウト調整-->
 							<th class="w70">出勤</th>
-							<th class="w70"></th>
+							<th class="w70"></th><!--Task26実装によるレイアウト調整-->
 							<th class="w70">退勤</th>
-							<th class="w70"></th>
+							<th class="w70"></th><!--Task26実装によるレイアウト調整-->
 							<th class="w80">中抜け時間</th>
 							<th class="w70">ステータス</th>
 							<th class="w240">備考</th>
@@ -84,24 +89,18 @@
 								<!--										th:value="${dailyAttendanceForm.trainingEndTime}" class="form-control" />-->
 								<!--								</td>-->
 
-								<!--Task28：定時ボタン
+								<!--Task28：定時の自動反映
+								定時ボタン追加
 								add: ダンディンフォン-->
-								<!--								<td class="w70">-->
-								<!--									<form th:action="@{/attendance/update}" method="post">-->
-								<!--										<input type="hidden" name="rowDate" th:value="${dailyAttendanceForm.trainingDate}">-->
-								<!--										<input type="submit" value="定時" name="fixedTime">-->
-								<!--									</form>-->
-								<!--								</td>-->
 								<td class="w70">
-									<button type="button"
-									style="background-color:yellowgreen; color:white;" 
-									class="btn" onclick="setOnTime(this)">定時</button>
+									<button type="button" class="btn btn-success default-button"
+										onclick="setOnTime(this)">定時</button>
 								</td>
-
+								<!--Task28追加終了-->
 
 								<!--Task26：出勤・退勤時間の入力方法変更
-								add: ダンディンフォン
-								-->
+								出勤・退勤時間を「時」と「分」を分けてプルダウンにする
+								add: ダンディンフォン-->
 								<td class="w70">
 									<select th:name="|attendanceList[${stat.index}].trainingStartTimeHour|"
 										class="form-control" th:errorclass="errorInput">
@@ -112,7 +111,6 @@
 											[[${hourMap.value}]]</option>
 									</select>
 								</td>
-
 
 								<td class="w70">
 									<select th:name="|attendanceList[${stat.index}].trainingStartTimeMinute|"
@@ -141,6 +139,7 @@
 											[[${minuteMap.value}]]</option>
 									</select>
 								</td>
+								<!--Task26追加終了-->
 
 								<td class="w80">
 									<select th:name="|attendanceList[${stat.index}].blankTime|" class="form-control">
@@ -175,6 +174,9 @@
 	</div>
 
 	<script th:inline="javascript">
+		//Task27：②確認ダイアログの追加
+		//更新ボタン押下時に確認のダイアログを表示する
+		//add: ダンディンフォン
 		function confirmUpdate() {
 			if (confirm("更新します。よろしいですか？")) {
 				return true;
@@ -182,6 +184,9 @@
 				return false;
 			}
 		}
+		//Task28：定時の自動反映
+		//入力の手間を省くため、定時(9時～18時)を自動反映させるようにする
+		//add: ダンディンフォン
 		function setOnTime(buttonElement) {
 			let row = buttonElement.closest('tr');
 			row.querySelector('select[name$="trainingStartTimeHour"]').value = "9";

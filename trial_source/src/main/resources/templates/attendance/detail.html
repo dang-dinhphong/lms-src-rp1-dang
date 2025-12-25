@@ -89,7 +89,9 @@
 			return hours + ':' + minutes;
 		}
 
-
+		//Task25：過去日が未入力の場合の表示
+		//過去日付の出勤・退勤時間に未入力がある場合、ポップアップで表示する。
+		//add: ダンディンフォン
 		$(function showAttendanceAlert() {
 			var showAttendanceAlertCondition = /*[[${emptiedAttendanceCheck}]]*/ "showAttendanceAlertCondition";
 			if (showAttendanceAlertCondition) {

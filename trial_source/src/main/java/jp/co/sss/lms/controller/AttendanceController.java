@@ -1,7 +1,6 @@
 package jp.co.sss.lms.controller;
 
 import java.text.ParseException;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +10,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import jp.co.sss.lms.dto.AttendanceManagementDto;
 import jp.co.sss.lms.dto.LoginUserDto;
@@ -142,12 +140,10 @@ public class AttendanceController {
 	public String complete(@ModelAttribute("attendanceForm") AttendanceForm attendanceForm, BindingResult result,
 			Model model)
 			throws ParseException {
-		//入力チェック
+		//Task27:入力チェックの実装
+		//author:ダンディンフォン
 		studentAttendanceService.inputCheck(attendanceForm, result);
 		if (result.hasErrors()) {
-			result.getAllErrors().forEach(error -> {
-				System.out.println("エラー箇所: " + error.getObjectName());
-			});
 			return "attendance/update";
 		} else {
 			// 更新
@@ -161,25 +157,5 @@ public class AttendanceController {
 			return "attendance/detail";
 		}
 	}
-
-//	@RequestMapping(path = "/update", method = RequestMethod.POST)
-//	public String punchOnTime(
-//	    @RequestParam(name = "fixedTime", required = false) String fixedTime,
-//	    @RequestParam(name = "rowDate", required = false) Date rowDate,
-//	    Model model) {
-//		
-//		//定時ボタンが押下されるかつ押下された行の日付はnullでない場合
-//	    if (fixedTime != null && rowDate != null) {
-//	        String successMsg = studentAttendanceService.setFixedTime(rowDate);
-//	        model.addAttribute("message", successMsg);
-//	    }
-//
-//	    // 勤怠リストの移し替え
-//	    List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
-//	            .getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId());
-//	    model.addAttribute("attendanceManagementDtoList", attendanceManagementDtoList);
-//
-//	    return "attendance/detail";
-//	}
 
 }
